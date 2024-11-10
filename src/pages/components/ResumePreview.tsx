@@ -1,3 +1,4 @@
+import html2pdf from 'html2pdf.js'; // Correctly import html2pdf.js
 import Image from 'next/image';
 import React, { useRef } from 'react';
 
@@ -30,7 +31,7 @@ interface ResumePreviewProps {
 
 
 const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
-    const html2pdf = require('html2pdf.js');
+    
     
 
     const profileImage = data?.image ? URL.createObjectURL(data.image) : undefined;
