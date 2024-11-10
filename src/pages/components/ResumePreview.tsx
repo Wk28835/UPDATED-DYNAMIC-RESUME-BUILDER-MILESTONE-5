@@ -65,26 +65,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
 
- const downloadPDF = () => {
-    const element = resumeRef.current; // The resume content
 
-    // Using html2pdf.js to generate the PDF
-    const options = {
-      filename: 'resume.pdf',  // PDF name
-      margin: [5, 5, 5, 5],    // Adjust margins to smaller values
-      html2canvas: {
-        scale: 2,  // Increase for higher quality but scale down if too large
-        useCORS: true,  // Enable cross-origin resource sharing
-      },
-      jsPDF: {
-        unit: 'mm',  // Use millimeters for unit
-        format: 'a4',  // A4 paper size
-        orientation: 'portrait',  // Portrait layout
-        compressPdf: true,  // Optional: Compress PDF file size
-      },
-    };
- }
-   
 
   return (
     <div>
