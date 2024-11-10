@@ -1,4 +1,4 @@
-import html2pdf from 'html2pdf.js'; // Correctly import html2pdf.js
+
 import Image from 'next/image';
 import React, { useRef } from 'react';
 
@@ -84,11 +84,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
       },
     };
 
-    html2pdf()
-      .from(element) // Target the element that contains the resume content
-      .set(options) // Set the options for the generated PDF
-      .save(); // Trigger the download of the PDF
-  };
+   
 
   return (
     <div>
