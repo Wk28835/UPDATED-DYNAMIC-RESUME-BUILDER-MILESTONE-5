@@ -5,23 +5,28 @@ import ResumePreview from './components/ResumePreview';
 
 const CyberResumeBuilder = () => {
   const [activeSection, setActiveSection] = useState('personal');
+
   const sectionRefs = useRef({});
+
   const sections = ['personal', 'experience', 'education', 'skills'];
 
   // Define types for the props
   interface NavItemProps {
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; // or React.ElementType
     label: string;
     section: string;
-    setActiveSection: (section: string) => void;
-    activeSection: string;
+    setActiveSection: (section: string) => void; // You need to make sure this is passed as a prop from parent
+    activeSection: string; // To check active state
   }
 
   const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, section }) => (
-    <button onClick={() => setActiveSection(section)} className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all duration-300 ${
-      activeSection === section
-        ? 'bg-green-500 bg-opacity-20 text-green-400 border border-green-500'
-        : 'hover:bg-green-500 hover:bg-opacity-10 text-gray-400 hover:text-green-400'}`}>
+    <button
+      onClick={() => setActiveSection(section)}
+      className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all duration-300 ${
+        activeSection === section
+          ? 'bg-green-500 bg-opacity-20 text-green-400 border border-green-500'
+          : 'hover:bg-green-500 hover:bg-opacity-10 text-gray-400 hover:text-green-400'
+      }`}>
       <Icon className="w-5 h-5" />
       <span className="flex-1 text-left">{label}</span>
       <ChevronRight className={`w-4 h-4 transition-transform ${activeSection === section ? 'rotate-90' : ''}`} />
@@ -44,13 +49,17 @@ const CyberResumeBuilder = () => {
   const [modified, setModified] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, sectionIndex?: number, field?: 'experience' | 'education' | 'skills') => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    sectionIndex?: number, // Optional, should be a number when passed
+    field?: 'experience' | 'education' | 'skills' // Optional, specific fields
+  ) => {
     const { name, value, type } = e.target;
-    
-    // Check if the input is of type "file"
     let files: FileList | undefined;
+
     if (type === 'file') {
-      files = (e.target as HTMLInputElement).files;
+      // Safely handle the null case for files
+      files = (e.target as HTMLInputElement).files ?? undefined;
     }
 
     setFormData((prevData) => {
@@ -71,14 +80,14 @@ const CyberResumeBuilder = () => {
           updatedFormData.skills = updatedSkills;
         }
       } else if (type === 'file' && files) {
-        updatedFormData.image = files[0];  // Handle the image file
+        updatedFormData.image = files[0]; // Assign the selected file
       } else {
         updatedFormData[name] = value;
       }
 
       const isModified = JSON.stringify(updatedFormData) !== JSON.stringify(initialFormData);
       setModified(isModified);
-      
+
       if (isModified) {
         setShowOutput(false); // Hide output if data is modified
       }
@@ -139,7 +148,7 @@ const CyberResumeBuilder = () => {
     if (modified) {
       setShowOutput(true); // Show output if modified
     } else {
-      alert("Please make some changes before generating the output.");
+      alert('Please make some changes before generating the output.');
     }
   };
 
@@ -168,7 +177,7 @@ const CyberResumeBuilder = () => {
         block: 'start',
       });
     }
-  }, [activeSection]);
+  }, [activeSection]); // Dependency on activeSection
 
   return (
     <div>
@@ -178,11 +187,12 @@ const CyberResumeBuilder = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
               <div className="flex items-center">
-                <Terminal className="w-6 h-6 text-green-500 mr-2" />
+                <Terminal className="w-6 h-6  text-green-500 mr-2" />
                 <span className="text-2xl sm:text-base font-bold text-white">
                   Cyber<span className="text-green-500">Resume</span>
                 </span>
               </div>
+              <div className="flex items-center gap-2 mt-2 sm:mt-0"></div>
             </div>
           </div>
         </nav>
@@ -195,7 +205,6 @@ const CyberResumeBuilder = () => {
                 <div className="flex justify-center mb-6">
                   <div className="relative group">
                     <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center border-2 border-green-500 border-opacity-50">
-                      {/* Camera tag for file input */}
                       <Camera className="w-8 h-8 text-green-500" />
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -230,54 +239,50 @@ const CyberResumeBuilder = () => {
               </div>
 
               <div className="space-y-2 p-4 bg-gray-900 rounded-xl shadow-lg border border-green-500 border-opacity-20">
-                <NavItem icon={User} label="Personal Info" section="personal" />
-                <NavItem icon={Briefcase} label="Experience" section="experience" />
-                <NavItem icon={GraduationCap} label="Education" section="education" />
-                <NavItem icon={Code} label="Skills" section="skills" />
+                {sections.map((section) => (
+                  <NavItem
+                    key={section}
+                    icon={section === 'personal' ? User : section === 'experience' ? Briefcase : section === 'education' ? GraduationCap : section === 'skills' ? Code : Plus}
+                    label={section.charAt(0).toUpperCase() + section.slice(1)}
+                    section={section}
+                    setActiveSection={setActiveSection}
+                    activeSection={activeSection}
+                  />
+                ))}
               </div>
             </div>
 
             {/* Main Content */}
-            <div className="col-span-9">
+            <div className="col-span-9 space-y-6">
               {/* Personal Section */}
               {activeSection === 'personal' && (
                 <div ref={(el) => (sectionRefs.current.personal = el)} className="space-y-4">
-                  <h2 className="text-2xl text-white">Personal Information</h2>
-                  <div className="flex gap-4">
-                    <div className="w-full">
-                      <input
-                        value={formData.email}
-                        onChange={handleChange}
-                        name="email"
-                        type="email"
-                        placeholder="Email"
-                        className="w-full text-sm p-3 bg-transparent text-white border-b focus:outline-none"
-                      />
-                    </div>
-                    <div className="w-full">
-                      <input
-                        value={formData.phone}
-                        onChange={handleChange}
-                        name="phone"
-                        type="tel"
-                        placeholder="Phone"
-                        className="w-full text-sm p-3 bg-transparent text-white border-b focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <textarea
-                    value={formData.professionalsummary}
-                    onChange={handleChange}
-                    name="professionalsummary"
-                    placeholder="Professional Summary"
-                    className="w-full h-24 p-3 bg-transparent text-white border-b focus:outline-none"
-                  />
-                  <div className="flex gap-4 mt-4">
-                    <button
-                      onClick={nextSection}
-                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
-                      Next
-                    </button>
+                  <h2 className="text-2xl font-bold text-green-500">Personal Details</h2>
+                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
+                    <input
+                      value={formData.name}
+                      onChange={handleChange}
+                      name="name"
+                      type="text"
+                      placeholder="Full Name"
+                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                    />
+                    <input
+                      value={formData.email}
+                      onChange={handleChange}
+                      name="email"
+                      type="email"
+                      placeholder="Email Address"
+                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                    />
+                    <input
+                      value={formData.phone}
+                      onChange={handleChange}
+                      name="phone"
+                      type="text"
+                      placeholder="Phone Number"
+                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                    />
                   </div>
                 </div>
               )}
@@ -285,53 +290,47 @@ const CyberResumeBuilder = () => {
               {/* Experience Section */}
               {activeSection === 'experience' && (
                 <div ref={(el) => (sectionRefs.current.experience = el)} className="space-y-4">
-                  <h2 className="text-2xl text-white">Experience</h2>
-                  {formData.experience.map((exp, index) => (
-                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
-                      <input
-                        name="companyname"
-                        type="text"
-                        value={exp.companyname}
-                        onChange={(e) => handleChange(e, index, 'experience')}
-                        placeholder="Company Name"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <input
-                        name="position"
-                        type="text"
-                        value={exp.position}
-                        onChange={(e) => handleChange(e, index, 'experience')}
-                        placeholder="Position"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <textarea
-                        name="jobdescription"
-                        value={exp.jobdescription}
-                        onChange={(e) => handleChange(e, index, 'experience')}
-                        placeholder="Job Description"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleRemoveExperience(index)} className="text-red-500">
-                          <Trash2 />
+                  <h2 className="text-2xl font-bold text-green-500">Experience</h2>
+                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
+                    {formData.experience.map((exp, index) => (
+                      <div key={index} className="space-y-2">
+                        <input
+                          value={exp.companyname}
+                          onChange={(e) => handleChange(e, index, 'experience')}
+                          name="companyname"
+                          type="text"
+                          placeholder="Company Name"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <input
+                          value={exp.position}
+                          onChange={(e) => handleChange(e, index, 'experience')}
+                          name="position"
+                          type="text"
+                          placeholder="Position"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <textarea
+                          value={exp.jobdescription}
+                          onChange={(e) => handleChange(e, index, 'experience')}
+                          name="jobdescription"
+                          placeholder="Job Description"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <button
+                          onClick={() => handleRemoveExperience(index)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Remove Experience
                         </button>
                       </div>
-                    </div>
-                  ))}
-                  <button onClick={handleAddExperience} className="flex items-center gap-2 text-green-400">
-                    <Plus />
-                    Add Experience
-                  </button>
-                  <div className="flex gap-4 mt-4">
+                    ))}
                     <button
-                      onClick={PreviousSection}
-                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
-                      Previous
-                    </button>
-                    <button
-                      onClick={nextSection}
-                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
-                      Next
+                      onClick={handleAddExperience}
+                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Experience
                     </button>
                   </div>
                 </div>
@@ -340,62 +339,56 @@ const CyberResumeBuilder = () => {
               {/* Education Section */}
               {activeSection === 'education' && (
                 <div ref={(el) => (sectionRefs.current.education = el)} className="space-y-4">
-                  <h2 className="text-2xl text-white">Education</h2>
-                  {formData.education.map((edu, index) => (
-                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
-                      <input
-                        name="institution"
-                        type="text"
-                        value={edu.institution}
-                        onChange={(e) => handleChange(e, index, 'education')}
-                        placeholder="Institution"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <input
-                        name="degree"
-                        type="text"
-                        value={edu.degree}
-                        onChange={(e) => handleChange(e, index, 'education')}
-                        placeholder="Degree"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <input
-                        name="year"
-                        type="text"
-                        value={edu.year}
-                        onChange={(e) => handleChange(e, index, 'education')}
-                        placeholder="Year"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <input
-                        name="gpa"
-                        type="text"
-                        value={edu.gpa}
-                        onChange={(e) => handleChange(e, index, 'education')}
-                        placeholder="GPA"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleRemoveEducation(index)} className="text-red-500">
-                          <Trash2 />
+                  <h2 className="text-2xl font-bold text-green-500">Education</h2>
+                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
+                    {formData.education.map((edu, index) => (
+                      <div key={index} className="space-y-2">
+                        <input
+                          value={edu.institution}
+                          onChange={(e) => handleChange(e, index, 'education')}
+                          name="institution"
+                          type="text"
+                          placeholder="Institution"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <input
+                          value={edu.degree}
+                          onChange={(e) => handleChange(e, index, 'education')}
+                          name="degree"
+                          type="text"
+                          placeholder="Degree"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <input
+                          value={edu.year}
+                          onChange={(e) => handleChange(e, index, 'education')}
+                          name="year"
+                          type="text"
+                          placeholder="Year"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <input
+                          value={edu.gpa}
+                          onChange={(e) => handleChange(e, index, 'education')}
+                          name="gpa"
+                          type="text"
+                          placeholder="GPA"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <button
+                          onClick={() => handleRemoveEducation(index)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Remove Education
                         </button>
                       </div>
-                    </div>
-                  ))}
-                  <button onClick={handleAddEducation} className="flex items-center gap-2 text-green-400">
-                    <Plus />
-                    Add Education
-                  </button>
-                  <div className="flex gap-4 mt-4">
+                    ))}
                     <button
-                      onClick={PreviousSection}
-                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
-                      Previous
-                    </button>
-                    <button
-                      onClick={nextSection}
-                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
-                      Next
+                      onClick={handleAddEducation}
+                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Education
                     </button>
                   </div>
                 </div>
@@ -404,49 +397,44 @@ const CyberResumeBuilder = () => {
               {/* Skills Section */}
               {activeSection === 'skills' && (
                 <div ref={(el) => (sectionRefs.current.skills = el)} className="space-y-4">
-                  <h2 className="text-2xl text-white">Skills</h2>
-                  {formData.skills.map((skill, index) => (
-                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
-                      <input
-                        name="skills"
-                        type="text"
-                        value={skill}
-                        onChange={(e) => handleChange(e, index, 'skills')}
-                        placeholder="Skill"
-                        className="w-full bg-transparent text-white border-b focus:outline-none"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleRemoveSkill(index)} className="text-red-500">
-                          <Trash2 />
+                  <h2 className="text-2xl font-bold text-green-500">Skills</h2>
+                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
+                    {formData.skills.map((skill, index) => (
+                      <div key={index} className="space-y-2">
+                        <input
+                          value={skill}
+                          onChange={(e) => handleChange(e, index, 'skills')}
+                          name="skills"
+                          type="text"
+                          placeholder="Skill"
+                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
+                        />
+                        <button
+                          onClick={() => handleRemoveSkill(index)}
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Remove Skill
                         </button>
                       </div>
-                    </div>
-                  ))}
-                  <button onClick={handleAddSkill} className="flex items-center gap-2 text-green-400">
-                    <Plus />
-                    Add Skill
-                  </button>
-                  <div className="flex gap-4 mt-4">
+                    ))}
                     <button
-                      onClick={PreviousSection}
-                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
-                      Previous
-                    </button>
-                    <button
-                      onClick={showData}
-                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
-                      Generate Resume
+                      onClick={handleAddSkill}
+                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Skill
                     </button>
                   </div>
                 </div>
               )}
-
-              {/* Resume Preview */}
-              {showOutput && <ResumePreview formData={formData} />}
             </div>
           </div>
         </div>
       </div>
+
+      {showOutput && (
+        <ResumePreview formData={formData} />
+      )}
     </div>
   );
 };
