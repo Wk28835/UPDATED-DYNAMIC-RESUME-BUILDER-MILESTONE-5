@@ -45,7 +45,7 @@ interface NavItemProps {
     skills: [],
   });
 
-  const [initialFormData, setInitialFormData] = useState(formData);
+  const [initialFormData] = useState(formData);
   const [modified, setModified] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
