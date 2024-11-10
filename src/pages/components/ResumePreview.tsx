@@ -1,4 +1,4 @@
-
+import Image from 'next/image';
 import React, { useRef } from 'react';
 
 
@@ -96,7 +96,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
       {/* Left Sidebar (Contact Information) */}
       <div className="w-full sm:w-1/3 bg-gradient-to-tl from-indigo-500 to-purple-600 p-6 rounded-l-xl flex flex-col items-center text-white">
         {/* Profile Image */}
-        <img
+        <Image
           src={profileImage}
           alt="Profile"
           className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-xl mb-4"
