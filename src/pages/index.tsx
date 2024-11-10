@@ -5,6 +5,20 @@ import ResumePreview from './components/ResumePreview';
 
 const CyberResumeBuilder = () => {
   const [activeSection, setActiveSection] = useState('personal');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    title: '',
+    phone: '',
+    image: null,
+    professionalsummary: '',
+    experience: [],
+    education: [],
+    skills: [],
+  });
+  const [initialFormData] = useState(formData);
+  const [modified, setModified] = useState(false);
+  const [showOutput, setShowOutput] = useState(false);
 
   const sectionRefs = useRef({});
 
@@ -32,22 +46,6 @@ const CyberResumeBuilder = () => {
       <ChevronRight className={`w-4 h-4 transition-transform ${activeSection === section ? 'rotate-90' : ''}`} />
     </button>
   );
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    title: '',
-    phone: '',
-    image: null,
-    professionalsummary: '',
-    experience: [],
-    education: [],
-    skills: [],
-  });
-
-  const [initialFormData] = useState(formData);
-  const [modified, setModified] = useState(false);
-  const [showOutput, setShowOutput] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -160,11 +158,11 @@ const CyberResumeBuilder = () => {
     }
   };
 
-  const PreviousSection = () => {
+  const previousSection = () => {
     const currentIndex = sections.indexOf(activeSection);
     if (currentIndex > 0) {
-      const nextSection = sections[currentIndex - 1];
-      setActiveSection(nextSection);
+      const prevSection = sections[currentIndex - 1];
+      setActiveSection(prevSection);
     }
   };
 
@@ -192,7 +190,6 @@ const CyberResumeBuilder = () => {
                   Cyber<span className="text-green-500">Resume</span>
                 </span>
               </div>
-              <div className="flex items-center gap-2 mt-2 sm:mt-0"></div>
             </div>
           </div>
         </nav>
@@ -238,11 +235,21 @@ const CyberResumeBuilder = () => {
                 />
               </div>
 
-              <div className="space-y-2 p-4 bg-gray-900 rounded-xl shadow-lg border border-green-500 border-opacity-20">
+              <div className="space-y-2 p-4 bg-gray-900 rounded-xl border border-green-500 border-opacity-20">
                 {sections.map((section) => (
                   <NavItem
                     key={section}
-                    icon={section === 'personal' ? User : section === 'experience' ? Briefcase : section === 'education' ? GraduationCap : section === 'skills' ? Code : Plus}
+                    icon={
+                      section === 'personal'
+                        ? User
+                        : section === 'experience'
+                        ? Briefcase
+                        : section === 'education'
+                        ? GraduationCap
+                        : section === 'skills'
+                        ? Code
+                        : Plus
+                    }
                     label={section.charAt(0).toUpperCase() + section.slice(1)}
                     section={section}
                     setActiveSection={setActiveSection}
@@ -254,184 +261,39 @@ const CyberResumeBuilder = () => {
 
             {/* Main Content */}
             <div className="col-span-9 space-y-6">
-              {/* Personal Section */}
-              {activeSection === 'personal' && (
-                <div ref={(el) => (sectionRefs.current.personal = el)} className="space-y-4">
-                  <h2 className="text-2xl font-bold text-green-500">Personal Details</h2>
-                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
-                    <input
-                      value={formData.name}
-                      onChange={handleChange}
-                      name="name"
-                      type="text"
-                      placeholder="Full Name"
-                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                    />
-                    <input
-                      value={formData.email}
-                      onChange={handleChange}
-                      name="email"
-                      type="email"
-                      placeholder="Email Address"
-                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                    />
-                    <input
-                      value={formData.phone}
-                      onChange={handleChange}
-                      name="phone"
-                      type="text"
-                      placeholder="Phone Number"
-                      className="w-full text-lg text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                    />
-                  </div>
-                </div>
-              )}
+              {/* Add all your sections like personal, experience, education, and skills here */}
 
-              {/* Experience Section */}
-              {activeSection === 'experience' && (
-                <div ref={(el) => (sectionRefs.current.experience = el)} className="space-y-4">
-                  <h2 className="text-2xl font-bold text-green-500">Experience</h2>
-                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
-                    {formData.experience.map((exp, index) => (
-                      <div key={index} className="space-y-2">
-                        <input
-                          value={exp.companyname}
-                          onChange={(e) => handleChange(e, index, 'experience')}
-                          name="companyname"
-                          type="text"
-                          placeholder="Company Name"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <input
-                          value={exp.position}
-                          onChange={(e) => handleChange(e, index, 'experience')}
-                          name="position"
-                          type="text"
-                          placeholder="Position"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <textarea
-                          value={exp.jobdescription}
-                          onChange={(e) => handleChange(e, index, 'experience')}
-                          name="jobdescription"
-                          placeholder="Job Description"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <button
-                          onClick={() => handleRemoveExperience(index)}
-                          className="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          Remove Experience
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddExperience}
-                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Experience
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Show Next and Previous Button */}
+              <div className="flex justify-between items-center mt-6">
+                <button
+                  onClick={previousSection}
+                  className="text-green-500 hover:text-green-700 text-sm flex items-center gap-2"
+                >
+                  <ChevronRight className="w-4 h-4 rotate-180" />
+                  Previous Section
+                </button>
+                <button
+                  onClick={nextSection}
+                  className="text-green-500 hover:text-green-700 text-sm flex items-center gap-2"
+                >
+                  Next Section
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
 
-              {/* Education Section */}
-              {activeSection === 'education' && (
-                <div ref={(el) => (sectionRefs.current.education = el)} className="space-y-4">
-                  <h2 className="text-2xl font-bold text-green-500">Education</h2>
-                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
-                    {formData.education.map((edu, index) => (
-                      <div key={index} className="space-y-2">
-                        <input
-                          value={edu.institution}
-                          onChange={(e) => handleChange(e, index, 'education')}
-                          name="institution"
-                          type="text"
-                          placeholder="Institution"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <input
-                          value={edu.degree}
-                          onChange={(e) => handleChange(e, index, 'education')}
-                          name="degree"
-                          type="text"
-                          placeholder="Degree"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <input
-                          value={edu.year}
-                          onChange={(e) => handleChange(e, index, 'education')}
-                          name="year"
-                          type="text"
-                          placeholder="Year"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <input
-                          value={edu.gpa}
-                          onChange={(e) => handleChange(e, index, 'education')}
-                          name="gpa"
-                          type="text"
-                          placeholder="GPA"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <button
-                          onClick={() => handleRemoveEducation(index)}
-                          className="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          Remove Education
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddEducation}
-                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Education
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Skills Section */}
-              {activeSection === 'skills' && (
-                <div ref={(el) => (sectionRefs.current.skills = el)} className="space-y-4">
-                  <h2 className="text-2xl font-bold text-green-500">Skills</h2>
-                  <div className="bg-gray-900 p-6 rounded-xl border border-green-500 border-opacity-20">
-                    {formData.skills.map((skill, index) => (
-                      <div key={index} className="space-y-2">
-                        <input
-                          value={skill}
-                          onChange={(e) => handleChange(e, index, 'skills')}
-                          name="skills"
-                          type="text"
-                          placeholder="Skill"
-                          className="w-full text-white bg-transparent focus:ring-1 focus:ring-green-500 rounded-lg mb-4"
-                        />
-                        <button
-                          onClick={() => handleRemoveSkill(index)}
-                          className="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          Remove Skill
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddSkill}
-                      className="flex items-center gap-2 text-green-500 hover:text-green-700 text-xs"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Skill
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Show Data Button */}
+              <button
+                onClick={showData}
+                className="mt-8 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg text-lg"
+              >
+                Show Resume Preview
+              </button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Resume Preview */}
       {showOutput && (
         <ResumePreview formData={formData} />
       )}
