@@ -1,26 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Camera,  Terminal,  GraduationCap, Briefcase, Code, User, Plus, Trash2, ChevronRight } from 'lucide-react';
+import { Camera, Terminal, GraduationCap, Briefcase, Code, User, Plus, Trash2, ChevronRight } from 'lucide-react';
 import ResumePreview from './components/ResumePreview';
-
 
 const CyberResumeBuilder = () => {
   const [activeSection, setActiveSection] = useState('personal');
-
   const sectionRefs = useRef({});
+  const sections = ['personal', 'experience', 'education', 'skills'];
 
-  const sections = ['personal', 'experience', 'education','skills'];
-
-
-// Define types for the props
-interface NavItemProps {
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; // or React.ElementType
-  label: string;
-  section: string;
-  setActiveSection: (section: string) => void; // You need to make sure this is passed as a prop from parent
-  activeSection: string; // To check active state
-}
-
+  // Define types for the props
+  interface NavItemProps {
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    label: string;
+    section: string;
+    setActiveSection: (section: string) => void;
+    activeSection: string;
+  }
 
   const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, section }) => (
     <button onClick={() => setActiveSection(section)} className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all duration-300 ${
@@ -49,12 +44,14 @@ interface NavItemProps {
   const [modified, setModified] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
-
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,sectionIndex?: number,  // Optional, should be a number when passed
-    field?: 'experience' | 'education' | 'skills'  // Optional, specific fields
-  ) => {
-    const { name, value, type, files } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, sectionIndex?: number, field?: 'experience' | 'education' | 'skills') => {
+    const { name, value, type } = e.target;
+    
+    // Check if the input is of type "file"
+    let files: FileList | undefined;
+    if (type === 'file') {
+      files = (e.target as HTMLInputElement).files;
+    }
 
     setFormData((prevData) => {
       const updatedFormData = { ...prevData };
@@ -73,8 +70,8 @@ interface NavItemProps {
           updatedSkills[sectionIndex] = value;
           updatedFormData.skills = updatedSkills;
         }
-      } else if (type === 'file') {
-        updatedFormData.image = files[0];
+      } else if (type === 'file' && files) {
+        updatedFormData.image = files[0];  // Handle the image file
       } else {
         updatedFormData[name] = value;
       }
@@ -89,7 +86,7 @@ interface NavItemProps {
       return updatedFormData;
     });
   };
-  
+
   const handleAddExperience = () => {
     setFormData((prevData) => ({
       ...prevData,
@@ -123,7 +120,6 @@ interface NavItemProps {
       return { ...prevData, education: updatedEducation };
     });
   };
-  
 
   const handleRemoveExperience = (index) => {
     setFormData((prevData) => {
@@ -138,7 +134,6 @@ interface NavItemProps {
       return { ...prevData, skills: updatedSkills };
     });
   };
-  
 
   const showData = () => {
     if (modified) {
@@ -155,6 +150,7 @@ interface NavItemProps {
       setActiveSection(nextSection);
     }
   };
+
   const PreviousSection = () => {
     const currentIndex = sections.indexOf(activeSection);
     if (currentIndex > 0) {
@@ -172,274 +168,285 @@ interface NavItemProps {
         block: 'start',
       });
     }
-  }, [activeSection]); // Dependency on activeSection
-
+  }, [activeSection]);
 
   return (
     <div>
-    <div className="min-h-screen bg-black text-gray-300">
-      {/* Top Navigation */}
-      <nav className="bg-black border-b border-green-500 border-opacity-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Terminal className="w-6 h-6  text-green-500 mr-2" />
-              <span className="text-2xl sm:text-base font-bold text-white">
-                Cyber<span className="text-green-500">Resume</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mt-2 sm:mt-0">
-              
-              
+      <div className="min-h-screen bg-black text-gray-300">
+        {/* Top Navigation */}
+        <nav className="bg-black border-b border-green-500 border-opacity-30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex items-center">
+                <Terminal className="w-6 h-6 text-green-500 mr-2" />
+                <span className="text-2xl sm:text-base font-bold text-white">
+                  Cyber<span className="text-green-500">Resume</span>
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-12 gap-8">
-          {/* Sidebar */}
-          <div className="col-span-3">
-            <div className="bg-gray-900 rounded-xl p-4 shadow-lg mb-6 border border-green-500 border-opacity-20">
-              <div className="flex justify-center mb-6">
-                <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center border-2 border-green-500 border-opacity-50">
-                    {/*below Camera tag is the logo of Camera appears with picture input*/}
-                    <Camera className="w-8 h-8 text-green-500" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    <input onChange={handleChange}  className="text-green-400 text-xs mt-10 ml-36" name="image" id="image" type="file" accept="image/*" required/>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-12 gap-8">
+            {/* Sidebar */}
+            <div className="col-span-3">
+              <div className="bg-gray-900 rounded-xl p-4 shadow-lg mb-6 border border-green-500 border-opacity-20">
+                <div className="flex justify-center mb-6">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center border-2 border-green-500 border-opacity-50">
+                      {/* Camera tag for file input */}
+                      <Camera className="w-8 h-8 text-green-500" />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      <input
+                        onChange={handleChange}
+                        className="text-green-400 text-xs mt-10 ml-36"
+                        name="image"
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
+                <input
+                  value={formData.name}
+                  onChange={handleChange}
+                  name="name"
+                  type="text"
+                  placeholder="Your Name"
+                  className="w-full text-center text-lg font-bold mb-2 bg-transparent text-white border-none focus:ring-1 focus:ring-green-500 rounded-lg"
+                />
+                <input
+                  value={formData.title}
+                  onChange={handleChange}
+                  name="title"
+                  type="text"
+                  placeholder="Your Title"
+                  className="w-full text-center text-sm text-gray-400 bg-transparent border-none focus:ring-1 focus:ring-green-500 rounded-lg"
+                />
               </div>
-              <input
-               value={formData.name} 
-               onChange={handleChange} 
-                name="name"
-                type="text"
-                placeholder="Your Name"
-                className="w-full text-center text-lg font-bold mb-2 bg-transparent text-white border-none focus:ring-1 focus:ring-green-500 rounded-lg"/>
-              <input
-               value={formData.title} 
-               onChange={handleChange} 
-                name="title"
-                type="text"
-                placeholder="Your Title"
-                className="w-full text-center text-sm text-gray-400 bg-transparent border-none focus:ring-1 focus:ring-green-500 rounded-lg"
-              />
+
+              <div className="space-y-2 p-4 bg-gray-900 rounded-xl shadow-lg border border-green-500 border-opacity-20">
+                <NavItem icon={User} label="Personal Info" section="personal" />
+                <NavItem icon={Briefcase} label="Experience" section="experience" />
+                <NavItem icon={GraduationCap} label="Education" section="education" />
+                <NavItem icon={Code} label="Skills" section="skills" />
+              </div>
             </div>
 
-            <div className="space-y-2 p-4 bg-gray-900 rounded-xl shadow-lg border border-green-500 border-opacity-20">
-              <NavItem icon={User} label="Personal Info" section="personal" />
-              <NavItem icon={Briefcase} label="Experience" section="experience" />
-              <NavItem icon={GraduationCap} label="Education" section="education" />
-              <NavItem icon={Code} label="Skills" section="skills" />
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="col-span-9">
-            <div className="bg-gray-900 p-6 rounded-xl shadow-lg border border-green-500 border-opacity-20">
-              {/* Personal Info Section */}
+            {/* Main Content */}
+            <div className="col-span-9">
+              {/* Personal Section */}
               {activeSection === 'personal' && (
-                <div ref={sectionRefs.current.personal} className="space-y-6 animate-fade">
-                  <h2 className="text-2xl font-bold text-green-400 mb-6 flex items-center gap-2">
-                    <User className="w-6 h-6" />
-                    Personal Information
-                  </h2>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm text-green-400">Email Address</label>
+                <div ref={(el) => (sectionRefs.current.personal = el)} className="space-y-4">
+                  <h2 className="text-2xl text-white">Personal Information</h2>
+                  <div className="flex gap-4">
+                    <div className="w-full">
                       <input
-                       value={formData.email} 
-                       onChange={handleChange} 
+                        value={formData.email}
+                        onChange={handleChange}
                         name="email"
                         type="email"
-                        className="w-full px-4 py-2 rounded-lg bg-black text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        placeholder="Email"
+                        className="w-full text-sm p-3 bg-transparent text-white border-b focus:outline-none"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="block text-sm text-green-400">Phone Number</label>
+                    <div className="w-full">
                       <input
-                       value={formData.phone} 
-                       onChange={handleChange} 
+                        value={formData.phone}
+                        onChange={handleChange}
                         name="phone"
                         type="tel"
-                        className="w-full px-4 py-2 rounded-lg bg-black text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        placeholder="Phone"
+                        className="w-full text-sm p-3 bg-transparent text-white border-b focus:outline-none"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm text-green-400">Professional Summary</label>
-                    <textarea
-                     value={formData.professionalsummary} 
-                     onChange={handleChange} 
+                  <textarea
+                    value={formData.professionalsummary}
+                    onChange={handleChange}
                     name="professionalsummary"
-                      rows={4}
-                      className="w-full px-4 py-2 rounded-lg bg-black text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                    />
+                    placeholder="Professional Summary"
+                    className="w-full h-24 p-3 bg-transparent text-white border-b focus:outline-none"
+                  />
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={nextSection}
+                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
+                      Next
+                    </button>
                   </div>
-                  <button className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg" onClick={nextSection}>Next</button>
                 </div>
               )}
 
               {/* Experience Section */}
               {activeSection === 'experience' && (
-                <div ref={(el) => (sectionRefs.current.experience = el)} className="animate-fade">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-green-400 flex items-center gap-2">
-                      <Briefcase className="w-6 h-6" />
-                      Work Experience
-                    </h2>
-                    <button onClick={handleAddExperience} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg transition-all duration-300">
-                      <Plus className="w-5 h-5" />
-                      Add Experience
+                <div ref={(el) => (sectionRefs.current.experience = el)} className="space-y-4">
+                  <h2 className="text-2xl text-white">Experience</h2>
+                  {formData.experience.map((exp, index) => (
+                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
+                      <input
+                        name="companyname"
+                        type="text"
+                        value={exp.companyname}
+                        onChange={(e) => handleChange(e, index, 'experience')}
+                        placeholder="Company Name"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
+                      />
+                      <input
+                        name="position"
+                        type="text"
+                        value={exp.position}
+                        onChange={(e) => handleChange(e, index, 'experience')}
+                        placeholder="Position"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
+                      />
+                      <textarea
+                        name="jobdescription"
+                        value={exp.jobdescription}
+                        onChange={(e) => handleChange(e, index, 'experience')}
+                        placeholder="Job Description"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => handleRemoveExperience(index)} className="text-red-500">
+                          <Trash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={handleAddExperience} className="flex items-center gap-2 text-green-400">
+                    <Plus />
+                    Add Experience
+                  </button>
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={PreviousSection}
+                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
+                      Previous
+                    </button>
+                    <button
+                      onClick={nextSection}
+                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
+                      Next
                     </button>
                   </div>
-                  
-                  {formData.experience.map((exp,index)=>(
-                  <div key={index} className="bg-black rounded-lg p-4 mb-4 border border-green-500 border-opacity-20">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <input
-                       value={exp.companyname} 
-                       onChange={(e)=> handleChange(e,index, 'experience')} 
-                        name="companyname"
-                        placeholder="Company Name"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                      />
-                      <input
-                       value={exp.position} 
-                       onChange={(e)=>{handleChange(e,index,'experience')}} 
-                        name="position"
-                        placeholder="Position"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                      />
-                    </div>
-                    <textarea
-                     value={exp.jobdescription} 
-                     onChange={(e)=>handleChange(e,index,'experience')} 
-                    name="jobdescription"
-                      placeholder="Job Description"
-                      rows={3}
-                      className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                    required/>
-                    <button onClick={()=>{handleRemoveExperience(index)}}>
-                    <Trash2 className="w-6 h-8 text-red-500 hover:text-red-400" />
-                      </button>
-                  </div>))}
-                  <button className="mt-8 mr-2 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"  onClick={PreviousSection}>Back</button>
-                  <button className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg" onClick={nextSection}>Next</button>
                 </div>
               )}
-                
+
               {/* Education Section */}
               {activeSection === 'education' && (
-                <div ref={(el) => (sectionRefs.current.education = el)} className="animate-fade">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2  className="text-2xl font-bold text-green-400 flex items-center gap-2">
-                      <GraduationCap className="w-6 h-6" />
-                      Education
-                    </h2>
-                    <button onClick={handleAddEducation} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg transition-all duration-300">
-                      <Plus className="w-5 h-5" />
-                      Add Education
-                    </button>
-                  </div>
-                  {formData.education.map((edu,index)=>(
-                  <div key={index} className="bg-black rounded-lg p-4 border border-green-500 border-opacity-20">
-                    <div className="grid grid-cols-2 gap-4">
+                <div ref={(el) => (sectionRefs.current.education = el)} className="space-y-4">
+                  <h2 className="text-2xl text-white">Education</h2>
+                  {formData.education.map((edu, index) => (
+                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
                       <input
-                       value={edu.institution} 
-                       onChange={(e)=>handleChange(e,index,'education')} 
-                      name="institution"
+                        name="institution"
+                        type="text"
+                        value={edu.institution}
+                        onChange={(e) => handleChange(e, index, 'education')}
                         placeholder="Institution"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
                       />
                       <input
+                        name="degree"
+                        type="text"
                         value={edu.degree}
-                            onChange={(e) => handleChange(e, index, 'education')}
-                      name="degree"
+                        onChange={(e) => handleChange(e, index, 'education')}
                         placeholder="Degree"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
                       />
                       <input
-                      value={edu.year}
-                      onChange={(e) => handleChange(e, index, 'education')}
-                      name="year"
+                        name="year"
+                        type="text"
+                        value={edu.year}
+                        onChange={(e) => handleChange(e, index, 'education')}
                         placeholder="Year"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
                       />
                       <input
+                        name="gpa"
+                        type="text"
                         value={edu.gpa}
                         onChange={(e) => handleChange(e, index, 'education')}
-                      name="gpa"
                         placeholder="GPA"
-                        className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-green-500 border-opacity-50 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
                       />
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => handleRemoveEducation(index)} className="text-red-500">
+                          <Trash2 />
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={()=>{handleRemoveEducation(index)}}>
-                    <Trash2 className="w-6 h-8 text-red-500 hover:text-red-400" />
+                  ))}
+                  <button onClick={handleAddEducation} className="flex items-center gap-2 text-green-400">
+                    <Plus />
+                    Add Education
+                  </button>
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={PreviousSection}
+                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
+                      Previous
                     </button>
-                  </div>))}
-                  <button className="mt-8 mr-2 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"  onClick={PreviousSection}>Back</button>
-                  <button className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg" onClick={nextSection}>Next</button>
+                    <button
+                      onClick={nextSection}
+                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
+                      Next
+                    </button>
+                  </div>
                 </div>
               )}
 
               {/* Skills Section */}
               {activeSection === 'skills' && (
-                <div   className="animate-fade">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-green-400 flex items-center gap-2">
-                      <Code className="w-6 h-6" />
-                      Skills
-                    </h2>
-                    <button onClick={handleAddSkill} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg transition-all duration-300">
-                      <Plus className="w-5 h-5" />
-                      Add Skill
+                <div ref={(el) => (sectionRefs.current.skills = el)} className="space-y-4">
+                  <h2 className="text-2xl text-white">Skills</h2>
+                  {formData.skills.map((skill, index) => (
+                    <div key={index} className="bg-gray-800 p-4 rounded-lg space-y-2">
+                      <input
+                        name="skills"
+                        type="text"
+                        value={skill}
+                        onChange={(e) => handleChange(e, index, 'skills')}
+                        placeholder="Skill"
+                        className="w-full bg-transparent text-white border-b focus:outline-none"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => handleRemoveSkill(index)} className="text-red-500">
+                          <Trash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={handleAddSkill} className="flex items-center gap-2 text-green-400">
+                    <Plus />
+                    Add Skill
+                  </button>
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      onClick={PreviousSection}
+                      className="w-1/2 p-3 bg-gray-500 text-white rounded-lg">
+                      Previous
+                    </button>
+                    <button
+                      onClick={showData}
+                      className="w-1/2 p-3 bg-green-500 text-white rounded-lg">
+                      Generate Resume
                     </button>
                   </div>
-                {formData.skills.map((skill,index)=>(
-                  <div key={index} className="grid grid-cols-3 gap-4">
-                    <div className="bg-black rounded-lg p-4 border border-green-500 border-opacity-20 relative group">
-                      <input
-       
-                       value={skill} 
-                       onChange={(e)=>handleChange(e,index,'skills')} 
-                      name="skills"
-                        placeholder="Enter skill"
-                        className="w-full bg-transparent border-none focus:ring-1 focus:ring-green-400 text-white rounded-lg"
-                      />
-                      
-                      <button onClick={()=>{handleRemoveSkill(index)}}>
-                        
-                        <Trash2 className="w-4 h-4 text-red-500 hover:text-red-400" />
-                      </button>
-                    </div>
-                    
-                  </div>))}
-                  <button className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"  onClick={PreviousSection}>Back</button>
-                  <button onClick={showData} className="mt-8 px-6 py-2 mx-40   bg-pink-600 text-black font-semibold rounded-lg">
-                
-                Generate Your Resume
-              </button>
                 </div>
               )}
-                
-            </div>
-            
-          </div>
-         
-        </div>
-       
-      </div>
-      
-     
-    </div>
 
-    {showOutput && <div className="py-4 bg-slate-600">
-           <ResumePreview data={formData} />
-           </div>}
+              {/* Resume Preview */}
+              {showOutput && <ResumePreview formData={formData} />}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
