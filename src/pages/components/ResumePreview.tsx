@@ -83,7 +83,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
         compressPdf: true,  // Optional: Compress PDF file size
       },
     };
-
+ }
    
 
   return (
