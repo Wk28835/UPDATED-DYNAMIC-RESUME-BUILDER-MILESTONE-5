@@ -170,12 +170,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
         >
           Print Resume
         </button>
-        <button
-          onClick={downloadPDF}
-          className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"
-        >
-          Download PDF
-        </button>
+        
       </div>
     </div>
   );
