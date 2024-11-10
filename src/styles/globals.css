@@ -12,12 +12,127 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+  
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  
+}
+
+@media (max-width: 768px) {
+  /* Mobile adjustments */
+  body {
+    font-size: 14px; /* Smaller text on mobile devices */
+    padding: 10px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .flex-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+
+  /* Make links in navigation or buttons smaller on mobile */
+  button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small mobile adjustments */
+  body {
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 5px;
+  }
+
+  .flex-container {
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.85rem;
+  }
+
+  /* Button text and padding adjustments */
+  button {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+  }
+}
+
+/* Specific Media Query for Very Small Devices (like portrait phones) */
+@media (max-width: 320px) {
+  /* Tiny device adjustments */
+  body {
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 3px;
+  }
+
+  .flex-container {
+    gap: 5px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+  }
+
+  button {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+}
+@viewport {
+  width: device-width;
+  initial-scale: 1;
 }
 
 @layer utilities {
