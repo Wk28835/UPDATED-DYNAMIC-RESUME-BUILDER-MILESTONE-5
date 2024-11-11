@@ -112,7 +112,7 @@ interface NavItemProps {
           updatedSkills[sectionIndex] = value;
           updatedFormData.skills = updatedSkills;
         }
-      } else if (e.target.files && e.target.files.length>0) {
+      } else if (e.target instanceof HTMLInputElement && e.target.type === 'file' && e.target.files) {
         updatedFormData.image = e.target.files[0];
       } else {
         updatedFormData[name] = value;
