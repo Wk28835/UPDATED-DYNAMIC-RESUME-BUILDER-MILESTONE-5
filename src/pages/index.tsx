@@ -87,27 +87,34 @@ interface NavItemProps {
     const { name, value, type, files } = e.target as HTMLInputElement;
 
     setFormData((prevData) => {
-      const updatedFormData = { ...prevData };
+  const updatedFormData = { ...prevData };
 
-      if (sectionIndex !== undefined) {
-        // Handle array fields (experience, education, skills)
-        if (field === 'experience' || field === 'education') {
-          const updatedSection = [...prevData[field]];
-          updatedSection[sectionIndex] = {
-            ...updatedSection[sectionIndex],
-            [name]: value,
-          };
-          updatedFormData[field] = updatedSection;
-        } else if (field === 'skills') {
-          const updatedSkills = [...prevData.skills];
-          updatedSkills[sectionIndex] = value;
-          updatedFormData.skills = updatedSkills;
-        }
-      } else if (type === 'file') {
-        updatedFormData.image = files[0];
-      } else {
-        updatedFormData[name] = value;
-      }
+  if (sectionIndex !== undefined) {
+    // Handle array fields (experience, education, skills)
+    if (field === 'experience') {
+      const updatedExperience = [...prevData.experience];
+      updatedExperience[sectionIndex] = {
+        ...updatedExperience[sectionIndex],
+        [name]: value,
+      };
+      updatedFormData.experience = updatedExperience;
+    } else if (field === 'education') {
+      const updatedEducation = [...prevData.education];
+      updatedEducation[sectionIndex] = {
+        ...updatedEducation[sectionIndex],
+        [name]: value,
+      };
+      updatedFormData.education = updatedEducation;
+    } else if (field === 'skills') {
+      const updatedSkills = [...prevData.skills];
+      updatedSkills[sectionIndex] = value;
+      updatedFormData.skills = updatedSkills;
+    }
+  } else if (type === 'file') {
+    updatedFormData.image = files[0];
+  } else {
+    updatedFormData[name] = value;
+  }
 
       const isModified = JSON.stringify(updatedFormData) !== JSON.stringify(initialFormData);
       setModified(isModified);
