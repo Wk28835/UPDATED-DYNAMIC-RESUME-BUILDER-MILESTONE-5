@@ -84,7 +84,7 @@ interface NavItemProps {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,sectionIndex?: number,  // Optional, should be a number when passed
     field?: 'experience' | 'education' | 'skills'  // Optional, specific fields
   ) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, files } = e.target as HTMLInputElement;
 
     setFormData((prevData) => {
       const updatedFormData = { ...prevData };
