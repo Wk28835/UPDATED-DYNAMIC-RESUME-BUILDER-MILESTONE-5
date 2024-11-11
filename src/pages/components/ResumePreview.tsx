@@ -32,15 +32,13 @@ interface ResumePreviewProps {
 }
 
 const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
-  const [html2pdfInstance, setHtml2pdfInstance] = useState<any>(null);
+  
   const resumeRef = useRef<HTMLDivElement | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string>('');
 
   useEffect(() => {
     // Import html2pdf only on client side
-    import('html2pdf.js').then(module => {
-      setHtml2pdfInstance(module.default);
-    });
+   
 
     // Create URL for profile image
     if (data?.image) {
@@ -76,29 +74,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   };
 
 
-  const downloadPDF = () => {
-    if (!html2pdfInstance || !resumeRef.current) return;
-
-    const options = {
-      filename: 'resume.pdf',
-      margin: [5, 5, 5, 5],
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-        compressPdf: true,
-      },
-    };
-
-    html2pdfInstance
-    .from(resumeRef.current)
-    .set(options)
-    .save();
-};
+ 
 
   return (
     <div>
@@ -197,7 +173,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
         Print Resume
       </button>
       <button
-        onClick={downloadPDF}
+        
         className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"
       >
         Download PDF
