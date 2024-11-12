@@ -171,16 +171,10 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
     <div className="text-center mt-6">
       <button
         onClick={printResume}
-        className="mt-8 px-6 py-2 bg-green-500 text-white font-semibold rounded-lg mr-4"
-      >
+        className="mt-8 px-6 py-2 bg-green-500 text-white font-semibold rounded-lg mr-4">
         Print Resume
       </button>
-      <button
-        
-        className="mt-8 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg"
-      >
-        Download PDF
-      </button>
+     
     </div>
   </div>
 );
