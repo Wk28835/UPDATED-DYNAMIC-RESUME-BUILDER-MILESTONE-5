@@ -15,8 +15,7 @@ interface ResumeData {
   experience: Array<{
     position: string;
     companyname: string;
-    location: string;
-    duration: string;
+   
     jobdescription: string;
   }>;
   education: Array<{
@@ -30,23 +29,24 @@ interface ResumeData {
 interface ResumePreviewProps {
   data: ResumeData;
 }
-
-const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
   
+const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
+
+  console.log("checking data for image",data)
   const resumeRef = useRef<HTMLDivElement | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string>('');
 
   useEffect(() => {
-    // Import html2pdf only on client side
-   
-
-    // Create URL for profile image
-    if (data?.image) {
+    
+       if (data?.image && data.image instanceof File) {
       const url = URL.createObjectURL(data.image);
       setProfileImageUrl(url);
       return () => URL.revokeObjectURL(url);
+    } else{
+      console.warn("Invalid Image",data?.image);
     }
-  }, [data?.image]);
+  }
+  , [data?.image]);
 
   const printResume = () => {
 
@@ -83,12 +83,16 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
       {/* Left Sidebar (Contact Information) */}
       <div className="w-full sm:w-1/3 bg-gradient-to-tl from-indigo-500 to-purple-600 p-6 rounded-l-xl flex flex-col items-center text-white">
         {/* Profile Image */}
+        {profileImageUrl?(
         <Image
           width={200}
           height={200}
           src={profileImageUrl}
           alt="Profile"
-          className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-xl mb-4"/>
+          className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-xl mb-4"
+          />):(
+            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gray-300 mb-4" />
+          )}
         
 
         {/* Name and Title */}
@@ -123,8 +127,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
             <div key={index} className="space-y-4 mb-4">
               <div className="p-4 bg-gray-50 rounded-lg shadow-md border border-indigo-200">
                 <h3 className="text-2xl font-semibold text-gray-800">{exp.position}</h3>
-                <p className="text-lg text-gray-600">{exp.companyname} - {exp.location}</p>
-                <p className="text-sm text-gray-500">{exp.duration}</p>
+               
                 <ul className="list-disc list-inside text-gray-700 mt-2">
                   <li>{exp.jobdescription}</li>
                 </ul>
