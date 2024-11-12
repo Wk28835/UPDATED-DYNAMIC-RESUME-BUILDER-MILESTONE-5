@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { act, useEffect, useRef, useState } from 'react';
 import { Camera, Terminal, GraduationCap, Briefcase, Code, User, Plus, Trash2, ChevronRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { Html } from 'next/document';
 
 const ResumePreview = dynamic(() => import('./components/ResumePreview'), { 
   ssr: false 
@@ -10,8 +11,7 @@ interface ExperienceItem {
   companyname: string;
   position: string;
   jobdescription: string;
-  location?: string;
-  duration?: string;
+  
 }
 
 interface EducationItem {
@@ -35,7 +35,13 @@ interface FormData {
 
 const CyberResumeBuilder: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('personal');
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // Declare the type for the refs object
+const sectionRefs = useRef<Record<string, React.RefObject<HTMLDivElement>>>({
+  personal: React.createRef(),
+  experience: React.createRef(),
+  education: React.createRef(),
+  skills: React.createRef()
+});
 
   const sections = ['personal', 'experience', 'education', 'skills'];
 
@@ -79,17 +85,32 @@ interface NavItemProps {
   const [modified, setModified] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
 
-
+  type FormDataValue = string | File | null | ExperienceItem[] | EducationItem[] | string[];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,sectionIndex?: number,  // Optional, should be a number when passed
     field?: 'experience' | 'education' | 'skills'  // Optional, specific fields
   ) => {
-    const { name, value } = e.target as HTMLInputElement;
+    let name:string;
+    let value:string | File | null;
+
+    if (e.target instanceof HTMLInputElement) {
+      name = e.target.name;
+      if (e.target.type === 'file' && e.target.files) {
+        value = e.target.files[0];  // Save the selected image file
+      } else {
+        value = e.target.value;
+      }
+    } else if (e.target instanceof HTMLTextAreaElement) {
+      name = e.target.name;
+      value = e.target.value;
+    } else {
+      return;
+    }
 
    
 
     setFormData((prevData) => {
-      const updatedFormData = { ...prevData };
+      const updatedFormData:FormData = { ...prevData };
     
       if (sectionIndex !== undefined) {
         // Handle array fields (experience, education, skills)
@@ -97,27 +118,30 @@ interface NavItemProps {
           const updatedExperience = [...prevData.experience];
           updatedExperience[sectionIndex] = {
             ...updatedExperience[sectionIndex],
-            [name]: value,
+            [name]: value as string,
           };
           updatedFormData.experience = updatedExperience;
         } else if (field === 'education') {
           const updatedEducation = [...prevData.education];
+
           updatedEducation[sectionIndex] = {
             ...updatedEducation[sectionIndex],
-            [name]: value,
+            [name]: value as string,
           };
           updatedFormData.education = updatedEducation;
         } else if (field === 'skills') {
           const updatedSkills = [...prevData.skills];
-          updatedSkills[sectionIndex] = value;
+          updatedSkills[sectionIndex] = value as string;
           updatedFormData.skills = updatedSkills;
         }
       } else if (e.target instanceof HTMLInputElement && e.target.type === 'file' && e.target.files) {
-        updatedFormData.image = e.target.files[0];
-      } else {
-        updatedFormData[name] = value;
+        updatedFormData.image = value as File | null;
+      } 
+       
+      else {
+        (updatedFormData[name as keyof FormData] as FormDataValue) = value as FormData[keyof FormData];
       }
-
+        
       const isModified = JSON.stringify(updatedFormData) !== JSON.stringify(initialFormData);
       setModified(isModified);
       
@@ -204,14 +228,13 @@ interface NavItemProps {
 
   // Using useEffect to trigger scroll when activeSection changes
   useEffect(() => {
-    const sectionRef = sectionRefs.current[activeSection];
-    if (sectionRef) {
-      sectionRef.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  }, [activeSection]); // Dependency on activeSection
+    sectionRefs.current[activeSection]?.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }, [activeSection]);// Dependency on activeSection
+
+  
 
 
   return (
@@ -269,10 +292,10 @@ interface NavItemProps {
             </div>
 
             <div className="space-y-2 p-4 bg-gray-900 rounded-xl shadow-lg border border-green-500 border-opacity-20">
-              <NavItem icon={User} label="Personal Info" section="personal" />
-              <NavItem icon={Briefcase} label="Experience" section="experience" />
-              <NavItem icon={GraduationCap} label="Education" section="education" />
-              <NavItem icon={Code} label="Skills" section="skills" />
+              <NavItem icon={User} label="Personal Info" section="personal" setActiveSection={setActiveSection} activeSection={activeSection} />
+              <NavItem icon={Briefcase} label="Experience" section="experience" setActiveSection={setActiveSection} activeSection={activeSection}/>
+              <NavItem icon={GraduationCap} label="Education" section="education"setActiveSection={setActiveSection} activeSection={activeSection} />
+              <NavItem icon={Code} label="Skills" section="skills"setActiveSection={setActiveSection}  activeSection={activeSection}  />
             </div>
           </div>
 
@@ -324,7 +347,7 @@ interface NavItemProps {
 
               {/* Experience Section */}
               {activeSection === 'experience' && (
-                <div ref={(el) => (sectionRefs.current.experience = el)} className="animate-fade">
+                <div ref={sectionRefs.current.experience} className="animate-fade">
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-green-400 flex items-center gap-2">
                       <Briefcase className="w-6 h-6" />
@@ -373,7 +396,7 @@ interface NavItemProps {
                 
               {/* Education Section */}
               {activeSection === 'education' && (
-                <div ref={(el) => (sectionRefs.current.education = el)} className="animate-fade">
+                <div ref={sectionRefs.current.education} className="animate-fade">
                   <div className="flex justify-between items-center mb-6">
                     <h2  className="text-2xl font-bold text-green-400 flex items-center gap-2">
                       <GraduationCap className="w-6 h-6" />
