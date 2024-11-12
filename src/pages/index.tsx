@@ -35,7 +35,7 @@ interface FormData {
 
 const CyberResumeBuilder: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('personal');
-  // Declare the type for the refs object
+ 
 const sectionRefs = useRef<Record<string, React.RefObject<HTMLDivElement>>>({
   personal: React.createRef(),
   experience: React.createRef(),
@@ -48,13 +48,13 @@ const sectionRefs = useRef<Record<string, React.RefObject<HTMLDivElement>>>({
   
 
 
-// Define types for the props
+
 interface NavItemProps {
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; // or React.ElementType
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; 
   label: string;
   section: string;
-  setActiveSection: (section: string) => void; // You need to make sure this is passed as a prop from parent
-  activeSection: string; // To check active state
+  setActiveSection: (section: string) => void; 
+  activeSection: string; 
 }
 
 
@@ -87,8 +87,8 @@ interface NavItemProps {
 
   type FormDataValue = string | File | null | ExperienceItem[] | EducationItem[] | string[];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,sectionIndex?: number,  // Optional, should be a number when passed
-    field?: 'experience' | 'education' | 'skills'  // Optional, specific fields
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,sectionIndex?: number,  
+    field?: 'experience' | 'education' | 'skills'  
   ) => {
     let name:string;
     let value:string | File | null;
@@ -96,7 +96,7 @@ interface NavItemProps {
     if (e.target instanceof HTMLInputElement) {
       name = e.target.name;
       if (e.target.type === 'file' && e.target.files) {
-        value = e.target.files[0];  // Save the selected image file
+        value = e.target.files[0]; 
       } else {
         value = e.target.value;
       }
@@ -113,7 +113,7 @@ interface NavItemProps {
       const updatedFormData:FormData = { ...prevData };
     
       if (sectionIndex !== undefined) {
-        // Handle array fields (experience, education, skills)
+       
         if (field === 'experience') {
           const updatedExperience = [...prevData.experience];
           updatedExperience[sectionIndex] = {
@@ -146,7 +146,7 @@ interface NavItemProps {
       setModified(isModified);
       
       if (isModified) {
-        setShowOutput(false); // Hide output if data is modified
+        setShowOutput(false); 
       }
 
       return updatedFormData;
@@ -205,7 +205,7 @@ interface NavItemProps {
 
   const showData = () => {
     if (modified) {
-      setShowOutput(true); // Show output if modified
+      setShowOutput(true);
     } else {
       alert("Please make some changes before generating the output.");
     }
@@ -226,13 +226,13 @@ interface NavItemProps {
     }
   };
 
-  // Using useEffect to trigger scroll when activeSection changes
+ 
   useEffect(() => {
     sectionRefs.current[activeSection]?.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
-  }, [activeSection]);// Dependency on activeSection
+  }, [activeSection]);
 
   
 
@@ -240,7 +240,7 @@ interface NavItemProps {
   return (
     <div>
     <div className="min-h-screen bg-black text-gray-300">
-      {/* Top Navigation */}
+     
       <nav className="bg-black border-b border-green-500 border-opacity-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -260,13 +260,13 @@ interface NavItemProps {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-12 gap-8">
-          {/* Sidebar */}
+      
           <div className="col-span-3">
             <div className="bg-gray-900 rounded-xl p-4 shadow-lg mb-6 border border-green-500 border-opacity-20">
               <div className="flex justify-center mb-6">
                 <div className="relative group">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center border-2 border-green-500 border-opacity-50">
-                    {/*below Camera tag is the logo of Camera appears with picture input*/}
+                    
                     <Camera className="w-8 h-8 text-green-500" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -299,10 +299,10 @@ interface NavItemProps {
             </div>
           </div>
 
-          {/* Main Content */}
+         
           <div className="col-span-9">
             <div className="bg-gray-900 p-6 rounded-xl shadow-lg border border-green-500 border-opacity-20">
-              {/* Personal Info Section */}
+              
               {activeSection === 'personal' && (
                 <div ref={sectionRefs.current.personal} className="space-y-6 animate-fade">
                   <h2 className="text-2xl font-bold text-green-400 mb-6 flex items-center gap-2">
@@ -345,7 +345,6 @@ interface NavItemProps {
                 </div>
               )}
 
-              {/* Experience Section */}
               {activeSection === 'experience' && (
                 <div ref={sectionRefs.current.experience} className="animate-fade">
                   <div className="flex justify-between items-center mb-6">
@@ -394,7 +393,7 @@ interface NavItemProps {
                 </div>
               )}
                 
-              {/* Education Section */}
+            
               {activeSection === 'education' && (
                 <div ref={sectionRefs.current.education} className="animate-fade">
                   <div className="flex justify-between items-center mb-6">
@@ -448,7 +447,6 @@ interface NavItemProps {
                 </div>
               )}
 
-              {/* Skills Section */}
               {activeSection === 'skills' && (
                 <div   className="animate-fade">
                   <div className="flex justify-between items-center mb-6">
