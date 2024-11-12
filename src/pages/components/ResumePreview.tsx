@@ -54,22 +54,22 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
     const printWindow = window.open('', '', 'height=600,width=800');
     const content = resumeRef.current.innerHTML;
 
-    if (printWindow) { // Ensure printWindow is not null
+    if (printWindow) { 
     printWindow.document.write('<html><head><title>Resume</title>');
     printWindow.document.write('<style>body{font-family: Arial, sans-serif; margin: 18px;}');
     printWindow.document.write('.resume-wrapper{max-width: 600px; margin: 0 auto;}');
     printWindow.document.write('h1, h2, h3, h4{font-weight: bold; color: #4CAF50;}');
     printWindow.document.write('p{font-size: 14px;}');
-    printWindow.document.write('@media print {body{font-size: 14px;}}'); // Optional: Styling for print
+    printWindow.document.write('@media print {body{font-size: 14px;}}'); 
     printWindow.document.write('</style></head><body>');
     printWindow.document.write(content);
     printWindow.document.write('</body></html>');
 
-    printWindow.document.close(); // Close the document to trigger the render
+    printWindow.document.close(); 
     printWindow.print();
     }else{
       console.error('failed to open print')
-    } // Trigger the print dialog
+    } 
     }
   };
 
@@ -80,9 +80,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
     <div>
     <div ref={resumeRef} className="max-w-4xl mx-auto p-4 bg-white rounded-xl shadow-2xl flex flex-col sm:flex-row">
 
-      {/* Left Sidebar (Contact Information) */}
+     
       <div className="w-full sm:w-1/3 bg-gradient-to-tl from-indigo-500 to-purple-600 p-6 rounded-l-xl flex flex-col items-center text-white">
-        {/* Profile Image */}
+      
         {profileImageUrl?(
         <Image
           width={200}
@@ -95,11 +95,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
           )}
         
 
-        {/* Name and Title */}
+      
         <h1 className="text-3xl sm:text-justify font-extrabold text-white mb-2">{data.name}</h1>
         <p className="text-lg font-medium mb-2">{data.title}</p>
 
-        {/* Contact Info */}
+       
         <div className="space-y-4 w-full text-center">
           <div className="flex justify-center items-center space-x-2">
             <a href={`mailto:${data.email}`} className="text-white">
@@ -112,15 +112,15 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
         </div>
       </div>
 
-      {/* Right Content Area (Experience, Skills, Education) */}
+    
       <div className="w-full sm:w-2/3 bg-gray-50 p-4 sm:p-6 rounded-r-xl">
-        {/* Professional Summary */}
+     
         <section className="mb-4">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-2">Professional Summary</h2>
           <p className="text-lg text-gray-600">{data.professionalsummary}</p>
         </section>
 
-        {/* Work Experience Section */}
+      
         <section className="mb-8">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-2">Work Experience</h2>
           {data.experience.map((exp, index) => (
@@ -136,7 +136,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
           ))}
         </section>
 
-        {/* Education Section */}
+      
         <section className="mb-4">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-2">Education</h2>
           {data.education.map((edu, index) => (
@@ -150,7 +150,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
           ))}
         </section>
 
-        {/* Skills Section */}
+       
         <section className="mb-4">
           <h2 className="text-3xl font-semibold text-indigo-600 mb-2">Skills</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -167,7 +167,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
       </div>
     </div>
 
-    {/* Print and Download Buttons */}
+    
     <div className="text-center mt-6">
       <button
         onClick={printResume}
