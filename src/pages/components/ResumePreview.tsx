@@ -72,7 +72,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
     } 
     }
   };
-
+if (!data) {
+    return <p>Loading...</p>;
+  }
 
  
 
