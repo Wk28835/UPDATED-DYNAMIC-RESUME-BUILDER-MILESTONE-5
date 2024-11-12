@@ -32,7 +32,7 @@ interface ResumePreviewProps {
   
 const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
 
-  console.log("checking data for image",data)
+  
   const resumeRef = useRef<HTMLDivElement | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string>('');
 
