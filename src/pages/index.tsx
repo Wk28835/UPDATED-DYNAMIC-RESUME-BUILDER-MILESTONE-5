@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState } from 'react';
 import { Camera, Terminal, GraduationCap, Briefcase, Code, User, Plus, Trash2, ChevronRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { Html } from 'next/document';
+
 
 const ResumePreview = dynamic(() => import('./components/ResumePreview'), { 
   ssr: false 
